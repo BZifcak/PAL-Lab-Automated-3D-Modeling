@@ -1,6 +1,9 @@
+function silentImport(pathA, pathB) {
 
-
-function silentImport( pathA,  pathB) {
+    // 🔹 Clear the current scene before importing anything
+    print("Clearing current scene...");
+    Scene.clear();
+    print("Scene cleared.");
 
     function importCharacter(path, offsetX) {
         print("Importing: " + path);
@@ -71,9 +74,8 @@ function silentImport( pathA,  pathB) {
     }
 
     // Import two characters independently
-    importCharacter(pathA, 100); //"C:/Users/bmzif/Downloads/KickToTheGroin(2).fbx"
-    importCharacter(pathB, -100); //"C:/Users/bmzif/Downloads/MmaKick.fbx"
+    importCharacter(pathA, 100);  // Example: "C:/Users/bmzif/Downloads/KickToTheGroin(2).fbx"
+    importCharacter(pathB, -100); // Example: "C:/Users/bmzif/Downloads/MmaKick.fbx"
 
     print("Multi-FBX import complete with animations and offsets.");
-
 }
