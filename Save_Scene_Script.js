@@ -18,7 +18,7 @@
 // Define an anonymous function;
 // serves as our main loop,
 // limits the scope of variables
-(function(){
+function save(){
 	
 	// Initialize 'static' variables that hold modifier key state
 	var s_bShiftPressed = false;
@@ -198,4 +198,4 @@
 	oAssetIOFilter.deleteLater();
 	
 // Finalize the function and invoke
-})();
+}
