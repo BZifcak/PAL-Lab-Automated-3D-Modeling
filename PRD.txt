@@ -1,0 +1,194 @@
+---
+
+# **Product Requirements Document (PRD)**
+
+### **Two-Character Automated FBX Import, Alignment & Scene Export Tool for DAZ Studio**
+
+---
+
+## **1. Overview**
+
+This project automates the process of importing two Mixamo-style FBX animation files into DAZ Studio, placing the characters into a shared scene, aligning them spatially, rotating them to face each other, and exporting the result as a clean `.duf` scene file—all without saving or copying the original FBX files into the output directory.
+
+The tool is intended for users who frequently generate paired-animation scenes (fighting, dancing, interacting) and need a fast, error-free workflow.
+
+---
+
+## **2. Goals & Objectives**
+
+### **Primary Goals**
+
+1. **Automatically import two characters with Mixamo animations** using DAZ’s `DzFbxImporter`.
+2. **Ensure both characters retain their animation data** without skeleton merges or clothing merges.
+3. **Auto-place the characters in world space** at symmetrical offsets (e.g., +100 and –100 on X).
+4. **Auto-rotate the characters so they face each other** after import.
+5. **Parameterize file paths** so the tool can be called programmatically with different FBX pairs and different output locations.
+6. **Save only the resulting scene** to the specified folder (e.g., `.duf`) without saving, copying, or exporting the original FBX files.
+7. **Run silently** without showing DAZ import dialogs.
+
+---
+
+## **3. Non-Goals**
+
+* No UI panel or GUI—tool is fully script-driven.
+* No batch processing of more than two characters (v1).
+* No material re-mapping or retargeting improvements.
+* No rendering features; this tool is only for scene construction.
+
+---
+
+## **4. Functional Requirements**
+
+### **4.1. Input Requirements**
+
+The script must accept the following parameters:
+
+#### **FBX A Path (string)**
+
+`pathA` – Absolute path to the first character’s FBX animation.
+
+#### **FBX B Path (string)**
+
+`pathB` – Absolute path to the second character’s FBX animation.
+
+#### **Save Directory Path (string)**
+
+`saveFolderPath` – Absolute path where the `.duf` scene should be saved.
+
+#### **Output Scene Name (string)**
+
+`fileNameWithoutExtension` – Name of the `.duf` file without extension.
+
+---
+
+## **4.2. Import Process Requirements**
+
+The system must:
+
+1. **Clear the scene** before importing anything.
+2. Import each FBX **independently**, with:
+
+   * `"Take" = "mixamo.com"`
+   * `MergeSkeletons = false`
+   * `MergeClothing = false`
+   * `RunSilent = true`
+3. Detect newly imported nodes by comparing scene state *before and after import*.
+4. Identify each character’s **root node** (prefer nodes with children).
+5. Automatically **position** them:
+
+   * Character A → `X = +100`
+   * Character B → `X = -100`
+6. Automatically **rotate** them so they face each other:
+
+   * Character A → face left (`Y rotation = 90°`)
+   * Character B → face right (`Y rotation = -90°`)
+   * (Exact values may be tuned depending on DAZ coordinate conventions.)
+
+---
+
+## **4.3. Saving Requirements**
+
+The script must:
+
+1. Save only the `.duf` scene.
+2. Save into the directory passed by `saveFolderPath`.
+3. Not export, embed, move, or copy the imported FBX files.
+4. Run silently with no dialogs.
+5. Use `DzSceneAssetFilter` with:
+
+   * `CompressOutput = false`
+   * `RunSilent = true`
+
+Example output path:
+
+```
+C:/Users/.../Scenes/Demo1.duf
+```
+
+---
+
+## **5. Behavioral Requirements**
+
+### **5.1. Error Handling**
+
+* If the importer cannot be found → show critical warning, abort.
+* If import fails for either file → warn the user, continue or abort based on severity.
+* If Save Directory does not exist → show error message.
+* If no new nodes are detected → show warning.
+
+### **5.2. Performance**
+
+* Should complete in under ~2 seconds per import on typical hardware.
+* No unnecessary rendering, simulation, or material recalculation.
+
+---
+
+## **6. Technical Specifications**
+
+### **6.1. DAZ SDK Components Used**
+
+* `DzFbxImporter`
+* `DzFileIOSettings`
+* `DzSceneAssetFilter`
+* `AssetIOMgr.doSaveWithOptions()`
+* `Scene.getNodeList()`, `Scene.clear()`
+* `setWSPos()` and `setWSRot()` or `setYRot()` for rotation
+
+### **6.2. Character Facing Logic**
+
+Characters should be rotated so that:
+
+* A at positive X **faces toward negative X**
+* B at negative X **faces toward positive X**
+
+Expected values:
+
+| Character | Position     | Rotation (Y-axis)                              |
+| --------- | ------------ | ---------------------------------------------- |
+| A         | (+100, 0, 0) | 180° or 90°, depending on DAZ facing direction |
+| B         | (−100, 0, 0) | 0° or −90°                                     |
+
+Your exact DAZ coordinate system might require a final tweak (we can adjust easily).
+
+---
+
+## **7. Future Enhancements (Not Required for v1)**
+
+* Batch processing for folders of FBX pairs.
+* Custom offsets via parameters.
+* Automatic scaling matching between disparate rigs.
+* Automatic preview render.
+* Error logs written to file instead of console.
+* Multi-character import (>2).
+
+---
+
+## **8. Success Criteria**
+
+The tool is considered complete when:
+
+1. Two Mixamo FBX files can be imported automatically.
+2. The characters appear on opposite sides of the scene.
+3. The characters face each other correctly.
+4. Their animation data plays correctly.
+5. No FBX files are saved to the output location.
+6. A `.duf` file is generated in the specified directory.
+7. No dialog boxes appear during import or save.
+
+---
+
+## **9. Example Usage**
+
+```javascript
+silentImport(
+    "C:/Characters/MotionA.fbx",
+    "C:/Characters/MotionB.fbx"
+);
+
+saveSceneToPath(
+    "C:/Users/User/Documents/DAZ/Scenes",
+    "Demo1"
+);
+```
+
+---
