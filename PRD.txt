@@ -1,4 +1,5 @@
----
+# PAL Lab Automated 3D Modeling
+Automates 3D video generation in Daz Studio by merging two pre-existing animations into a single scene, synchronizing timelines, aligning characters and cameras, and producing final rendered videos. It provides Daz Script modules, example DUF scenes, orchestration wrappers, and CI-ready rendering presets to support reproducible, extensible pipelines for research-grade stimulus creation.---
 
 # Product Requirements Document (PRD) #
 
