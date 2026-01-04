@@ -1,81 +1,95 @@
 function silentImport(pathA, pathB) {
 
-    // 🔹 Clear the current scene before importing anything
     print("Clearing current scene...");
     Scene.clear();
     print("Scene cleared.");
 
-    function importCharacter(path, offsetX) {
+    function importAndTransform(path, offsetX, yRotationRadians) {
+
         print("Importing: " + path);
 
-        // Create a new importer instance
-        var oImportMgr = App.getImportMgr();
-        var sClassName = "DzFbxImporter";
-        var oImporter = oImportMgr.findImporterByClassName(sClassName);
-        if (!oImporter) {
+        var importMgr = App.getImportMgr();
+        var importer = importMgr.findImporterByClassName("DzFbxImporter");
+        if (!importer) {
             MessageBox.critical("Importer not found", "Could not find FBX importer", "&OK");
-            return;
+            return null;
         }
 
-        // Snapshot of current nodes
+        // Snapshot before import
         var oldNodes = Scene.getNodeList();
+		print(oldNodes.length);
+        var settings = new DzFileIOSettings();
+        importer.getOptions(settings, true, "");
 
-        // Prepare importer settings
-        var oSettings = new DzFileIOSettings();
-        var bShowOptions = true;
-        var bOptionsBeforeFile = (bShowOptions && App.version64 >= 0x0004000900030016);
-        if (!oImporter.getOptions(oSettings, bShowOptions && bOptionsBeforeFile, "")) {
-            print("Failed to initialize importer options.");
-            oImporter.deleteLater();
-            return;
+        settings.setStringValue("Take", "mixamo.com");
+        settings.setBoolValue("RunSilent", true);
+        settings.setBoolValue("MergeSkeletons", false);
+        settings.setBoolValue("MergeClothing", false);
+        settings.setBoolValue("LoadAnimation", true); // KEEP animation
+
+        var ok = importer.readFile(path, settings);
+        importer.deleteLater();
+
+        if (!ok) {
+            MessageBox.warning("Import failed", path, "&OK");
+            return null;
         }
 
-        oSettings.setStringValue("Take", "mixamo.com");
-        if (App.version64 >= 0x0004000900030016) {
-            oSettings.setBoolValue("ShowIndividualSettings", true);
-        }
-        oSettings.setIntValue("RunSilent", (bShowOptions && !bOptionsBeforeFile ? 0 : 1));
-        oSettings.setBoolValue("MergeSkeletons", false);
-        oSettings.setBoolValue("MergeClothing", false);
-
-        // Perform import
-        var result = oImporter.readFile(path, oSettings);
-        oImporter.deleteLater();
-        if (!result) {
-            MessageBox.warning("Import failed", "FBX import failed for: " + path, "&OK");
-            return;
-        }
-
-        // Detect newly imported nodes
+        // Detect new nodes
         var newNodes = Scene.getNodeList();
-        var importedNodes = [];
-        for (var i = 0; i < newNodes.length; i++) {
-            if (oldNodes.indexOf(newNodes[i]) === -1) {
-                importedNodes.push(newNodes[i]);
-            }
+        print(newNodes.length);
+        var rootNode = newNodes[oldNodes.length];
+        
+
+        if (!rootNode) {
+            print("No root node detected for " + path);
+            return null;
         }
 
-        if (importedNodes.length > 0) {
-            // Pick the first node with children, or first node if none
-            var rootNode = importedNodes[0];
-            for (var i = 0; i < importedNodes.length; i++) {
-                if (importedNodes[i].getNumChildren && importedNodes[i].getNumChildren() > 0) {
-                    rootNode = importedNodes[i];
-                    break;
-                }
-            }
+        // Position
+        rootNode.setWSPos(new DzVec3(offsetX, 0, 0));
 
-            // Move character
-            rootNode.setWSPos(new DzVec3(offsetX, 0, 0));
-            print("Imported node: " + rootNode.getLabel() + " moved to X=" + offsetX);
-        } else {
-            MessageBox.warning("Import detection failed", "No new node detected for: " + path, "&OK");
-        }
+        // Rotate (do NOT touch animation data)
+        var quat = new DzQuat(
+            DzRotationOrder("XYZ"),
+            new DzVec3(0, yRotationRadians, 0)
+        );
+        rootNode.setWSRot(quat);
+
+        print(
+            "Imported & transformed: " + rootNode.getLabel() +
+            " | X=" + offsetX +
+            " | Y-rot=" + (yRotationRadians * 180 / Math.PI) + "°"
+        );
+
+        return rootNode;
     }
 
-    // Import two characters independently
-    importCharacter(pathA, 100);  // Example: "C:/Users/bmzif/Downloads/KickToTheGroin(2).fbx"
-    importCharacter(pathB, -100); // Example: "C:/Users/bmzif/Downloads/MmaKick.fbx"
+    // Character A: on +X, face LEFT (-X)
+    var nodeA = importAndTransform(
+        pathA,
+        100,
+        -Math.PI / 2   // -90°
+    );
 
-    print("Multi-FBX import complete with animations and offsets.");
+    // Character B: on -X, face RIGHT (+X)
+    var nodeB = importAndTransform(
+        pathB,
+        -100,
+        Math.PI / 2    // +90°
+    );
+
+    if (!nodeA || !nodeB) {
+        print("Import failed.");
+        return;
+    }
+
+    print("Both characters imported, positioned, rotated, and animated correctly.");
+    print("done.");
 }
+
+// RUN
+silentImport(
+    "C:/Users/bmzif/Downloads/DownloadedFBXDemo/KickToTheGroin(2).fbx",
+    "C:/Users/bmzif/Downloads/DownloadedFBXDemo/MmaKick.fbx"
+);
