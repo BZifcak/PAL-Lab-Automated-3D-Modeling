@@ -1,8 +1,4 @@
-//current problem is the script doesn't retaint the characters animations 
-//can be updated for running on different machines
-
-
-// Import & save function as before
+// Import and position function
 function silentImport(pathA, pathB) {
 
     print("Clearing current scene...");
@@ -93,8 +89,7 @@ function silentImport(pathA, pathB) {
     print("done.");
 }
 
-
-// Save function as before
+// Save function 
 function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
     var oAssetIOMgr = App.getAssetIOMgr();
     var nAssetIOFilter = oAssetIOMgr.findFilter("DzSceneAssetFilter");
@@ -122,6 +117,7 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
     oAssetIOFilter.deleteLater();
 }
 
+//file source and destination (can be changed for different machines)
 var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
 
