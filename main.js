@@ -120,6 +120,22 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
 //file source and destination (can be changed for different machines)
 var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
+//
+function getSubFolders(folderPath) {
+    var dir = new DzDir(folderPath);
+    var entries = dir.entryList();
+    var folders = [];
+
+    for (var i = 0; i < entries.length; i++) {
+        if (entries[i] === "." || entries[i] === "..") continue;
+        var subPath = folderPath + "/" + entries[i];
+        var subDir = new DzDir(subPath);
+        if (subDir.exists()) {
+            folders.push(subPath);
+        }
+    }
+    return folders;
+}
 
 // Utility to list all FBX files in a folder
 function getFBXFiles(folderPath) {
@@ -133,16 +149,49 @@ function getFBXFiles(folderPath) {
     }
     return fbxFiles;
 }
-// 🔹 Main loop: iterate through every combination of two files
-var fbxFiles = getFBXFiles(fbxFolder);
 
-for (var i = 0; i < fbxFiles.length; i++) {
-    for (var j = i + 1; j < fbxFiles.length; j++) {
-        silentImport(fbxFiles[i], fbxFiles[j]);
-        var nameA = fbxFiles[i].split("/").pop().replace(".fbx", "");
-        var nameB = fbxFiles[j].split("/").pop().replace(".fbx", "");
-        saveSceneToPath(saveFolder, nameA + "_" + nameB);
+
+// 🔹 Main loop: iterate through every combination of two files
+var comboFolders = getSubFolders(fbxFolder);
+
+for (var c = 0; c < comboFolders.length; c++) {
+
+    print("Processing combo folder: " + comboFolders[c]);
+
+    // Expect exactly two animation subfolders
+    var animationFolders = getSubFolders(comboFolders[c]);
+
+    if (animationFolders.length !== 2) {
+        print("Skipping (expected 2 animation folders): " + comboFolders[c]);
+        continue;
+    }
+
+    var animAFolder = animationFolders[0];
+    var animBFolder = animationFolders[1];
+
+    var animAFiles = getFBXFiles(animAFolder);
+    var animBFiles = getFBXFiles(animBFolder);
+
+    if (animAFiles.length === 0 || animBFiles.length === 0) {
+        print("Skipping (missing FBX files): " + comboFolders[c]);
+        continue;
+    }
+
+    // Cartesian product: every A with every B
+    for (var i = 0; i < animAFiles.length; i++) {
+        for (var j = 0; j < animBFiles.length; j++) {
+
+            silentImport(animAFiles[i], animBFiles[j]);
+
+            var nameA = animAFiles[i].split("/").pop().replace(".fbx", "");
+            var nameB = animBFiles[j].split("/").pop().replace(".fbx", "");
+
+            saveSceneToPath(
+                saveFolder,
+                nameA + "_" + nameB
+            );
+        }
     }
 }
 
-print("All combinations processed.");
+print("All animation combinations processed.");
