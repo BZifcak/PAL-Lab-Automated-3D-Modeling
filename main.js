@@ -180,6 +180,12 @@ for (var c = 0; c < comboFolders.length; c++) {
     // Cartesian product: every A with every B
     for (var i = 0; i < animAFiles.length; i++) {
         for (var j = 0; j < animBFiles.length; j++) {
+            //assumes that animA and animB folders include characters in the same order
+            
+            //prevents scene with same character in both roles
+            if(i == j){
+                break;
+            }
 
             silentImport(animAFiles[i], animBFiles[j]);
 
