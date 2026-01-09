@@ -69,14 +69,14 @@ function silentImport(pathA, pathB) {
     // Character A: on +X, face LEFT (-X)
     var nodeA = importAndTransform(
         pathA,
-        100,
+        43,
         -Math.PI / 2   // -90°
     );
 
     // Character B: on -X, face RIGHT (+X)
     var nodeB = importAndTransform(
         pathB,
-        -100,
+        -43,
         Math.PI / 2    // +90°
     );
 
