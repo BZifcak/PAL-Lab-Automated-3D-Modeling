@@ -39,84 +39,25 @@ The tool is intended for users who frequently generate paired-animation scenes (
 
 ---
 
-## 4. Functional Requirements
+## 4. Behavioral Requirements
 
-### 4.1. Input Parameters
-
-| Parameter                  | Description                                        |
-| -------------------------- | -------------------------------------------------- |
-| `pathA`                    | Absolute path to the first FBX animation file.     |
-| `pathB`                    | Absolute path to the second FBX animation file.    |
-| `saveFolderPath`           | Directory where the `.duf` scene will be saved.    |
-| `fileNameWithoutExtension` | Name of the output scene file (without extension). |
-
----
-
-### 4.2. Import Process Requirements
-
-The system must:
-
-1. **Clear the scene** before import.
-2. Import each FBX independently with:
-
-   * `"Take" = "mixamo.com"`
-   * `MergeSkeletons = false`
-   * `MergeClothing = false`
-   * `RunSilent = true`
-3. Detect newly imported nodes by comparing scene state before/after import.
-4. Identify the character’s root node (prefer nodes with children).
-5. **Auto-position characters**:
-
-   * Character A → `X = +100`
-   * Character B → `X = -100`
-6. **Auto-rotate characters to face each other**:
-
-   * Character A → face left (`Y = 90°`)
-   * Character B → face right (`Y = -90°`)
-   * (Values may need tuning based on DAZ orientation.)
-
----
-
-### 4.3. Saving Requirements
-
-The script must:
-
-1. Save **only** the `.duf` scene.
-2. Save into the directory defined by `saveFolderPath`.
-3. **Never export, copy, or save the FBX files** to the output folder.
-4. Run silently with no UI dialogs.
-5. Use `DzSceneAssetFilter` with:
-
-   * `CompressOutput = false`
-   * `RunSilent = true`
-
-**Example output path:**
-
-```
-C:/Users/.../Scenes/Demo1.duf
-```
-
----
-
-## 5. Behavioral Requirements
-
-### 5.1. Error Handling
+### 4.1. Error Handling
 
 * If importer is missing → show critical error, abort.
 * If import fails → warn user.
 * If save directory does not exist → show error.
 * If node detection fails → warning, but continue.
 
-### 5.2. Performance
+### 4.2. Performance
 
 * Should import each FBX within ~2 seconds.
 * No simulation, rendering, or material recalculation.
 
 ---
 
-## 6. Technical Specifications
+## 5. Technical Specifications
 
-### 6.1. DAZ SDK Components Used
+### 5.1. DAZ SDK Components Used
 
 * `DzFbxImporter`
 * `DzFileIOSettings`
@@ -128,7 +69,7 @@ C:/Users/.../Scenes/Demo1.duf
 
 ---
 
-### 6.2. Character Facing Logic
+### 5.2. Character Facing Logic
 
 Characters should face toward each other:
 
@@ -141,7 +82,7 @@ Final angles depend on DAZ's native facing direction.
 
 ---
 
-## 7. Future Enhancements (v2+)
+## 6. Future Enhancements (v2+)
 
 * Batch FBX pair processing.
 * Custom offsets and rotation parameters.
@@ -152,7 +93,7 @@ Final angles depend on DAZ's native facing direction.
 
 ---
 
-## 8. Success Criteria
+## 7. Success Criteria
 
 The tool is complete when:
 
@@ -166,18 +107,3 @@ The tool is complete when:
 
 ---
 
-## 9. Example Usage
-
-```javascript
-silentImport(
-    "C:/Characters/MotionA.fbx",
-    "C:/Characters/MotionB.fbx"
-);
-
-saveSceneToPath(
-    "C:/Users/User/Documents/DAZ/Scenes",
-    "Demo1"
-);
-```
-
----
