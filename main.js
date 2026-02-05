@@ -117,6 +117,18 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
     oAssetIOFilter.deleteLater();
 }
 
+function makeCamera(){
+var oCam = new DzBasicCamera();
+oCam.setName("My New Camera");
+Scene.addNode(oCam);
+
+    oCam.setWSPos(new DzVec3(0, 130, 400));
+    oCam.setWSRot(new DzQuat(
+        DzRotationOrder("XYZ"),
+        new DzVec3(0, 0, 0)
+    ));
+}
+ 
 //file source and destination (can be changed for different machines)
 var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
@@ -153,7 +165,6 @@ function getFBXFiles(folderPath) {
 
 // 🔹 Main loop: iterate through every combination of two files
 var comboFolders = getSubFolders(fbxFolder);
-
 for (var c = 0; c < comboFolders.length; c++) {
 
     print("Processing combo folder: " + comboFolders[c]);
