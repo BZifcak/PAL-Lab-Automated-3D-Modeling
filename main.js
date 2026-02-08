@@ -191,16 +191,17 @@ for (var c = 0; c < comboFolders.length; c++) {
     // Cartesian product: every A with every B
     for (var i = 0; i < animAFiles.length; i++) {
         for (var j = 0; j < animBFiles.length; j++) {
-            silentImport(animAFiles[i], animBFiles[j]);
-
             var nameA = animAFiles[i].split("/").pop().replace(".fbx", "");
             var nameB = animBFiles[j].split("/").pop().replace(".fbx", "");
-
+            if (nameA ==nameB ){
+                print("skipping "+ nameA + " + " +nameB + " scene." );
+            } else{
+            silentImport(animAFiles[i], animBFiles[j]);
             saveSceneToPath(
                 saveFolder,
                 nameA + "_" + nameB + "_" + actionName
             );
-           
+        }
         }
     }
 }
