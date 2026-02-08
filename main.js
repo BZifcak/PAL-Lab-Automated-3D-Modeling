@@ -187,7 +187,7 @@ for (var c = 0; c < comboFolders.length; c++) {
         print("Skipping (missing FBX files): " + comboFolders[c]);
         continue;
     }
-
+    var actionName = comboFolders[c].split("/")[comboFolders[c].split("/").length -1];
     // Cartesian product: every A with every B
     for (var i = 0; i < animAFiles.length; i++) {
         for (var j = 0; j < animBFiles.length; j++) {
@@ -198,8 +198,9 @@ for (var c = 0; c < comboFolders.length; c++) {
 
             saveSceneToPath(
                 saveFolder,
-                nameA + "_" + nameB
+                nameA + "_" + nameB + "_" + actionName
             );
+           
         }
     }
 }
