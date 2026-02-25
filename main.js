@@ -1,10 +1,36 @@
 // Import and position function
-function silentImport(pathA, pathB,event) {
+function silentImport(pathA, pathB) {
 
     print("Clearing current scene...");
-    resetScene();
+    Scene.clear();
     print("Scene cleared.");
 
+    function trimPropertyKeysToFrameRange(prop, startFrame, endFrame) {
+        if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function" || typeof prop.deleteKeys !== "function") return;
+
+		var ticksPerFrame = Scene.getTimeStep().valueOf(); // usually 160
+		var keepStartTick = startFrame * ticksPerFrame;
+		var keepEndTick = endFrame * ticksPerFrame;        
+
+        for (var i = prop.getNumKeys() - 1; i >= 0; --i) {
+            var t = prop.getKeyTime(i).valueOf(); // tick time
+            if (t < keepStartTick || t > keepEndTick) {
+                prop.deleteKeys(i,i); // index delete, safe in reverse
+            }
+        }
+    }
+
+
+    function applyRangeToNodes(nodes, startFrame, endFrame ) {
+        for (var i = 0; i < nodes.length; i++) {
+            var props = nodes[i].getPropertyList();
+            for (var p = 0; p < props.length; p++) {
+                var prop = props[p];
+                if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function") continue;
+                trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
+            }
+        }
+    }
     function importAndTransform(path, offsetX, yRotationRadians) {
 
         print("Importing: " + path);
@@ -40,9 +66,16 @@ function silentImport(pathA, pathB,event) {
         var newNodes = Scene.getNodeList();
         print(newNodes.length);
 
-        //Node object being manipulated
-        var rootNode = newNodes[oldNodes.length];
-        
+        //Node object
+        var importedNodes = [];
+        for (var i = oldNodes.length; i < newNodes.length; i++) {
+            importedNodes.push(newNodes[i]);
+        }
+        var rootNode = importedNodes.length ? importedNodes[0] : null;
+        //setting range for frames
+        var startFrame = 0;
+        var endFrame= 30;  
+        applyRangeToNodes(importedNodes, startFrame, endFrame);
 
         if (!rootNode) {
             print("No root node detected for " + path);
@@ -64,24 +97,19 @@ function silentImport(pathA, pathB,event) {
             " | X=" + offsetX +
             " | Y-rot=" + (yRotationRadians * 180 / Math.PI) + "°"
         );
-        return rootNode;
+
+
+        var props = rootNode.getPropertyList();
+        print(props);
+        print("props length: " + props.length);
+        return { rootNode: rootNode, nodes: importedNodes };;
+        
     }
-    var offset = determineOffset(event);
-    // Character A: on +X, face LEFT (-X)
-    var nodeA = importAndTransform(
-        pathA,
-        offset,
-        -Math.PI / 2   // -90°
-    );
 
-    // Character B: on -X, face RIGHT (+X)
-    var nodeB = importAndTransform(
-        pathB,
-        -offset,
-        Math.PI / 2    // +90°
-    );
+    var a = importAndTransform(pathA, 100, -Math.PI / 2);
+    var b = importAndTransform(pathB, -100, Math.PI / 2);
 
-    if (!nodeA || !nodeB) {
+    if (!a || !b) {
         print("Import failed.");
         return;
     }
@@ -118,6 +146,11 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
     oAssetIOFilter.deleteLater();
 }
 
+
+/***
+ * camera constructor with hard coded positioning,
+ * TODO: parameterize positioning
+ */
 function makeCamera(){
 var oCam = new DzBasicCamera();
 oCam.setName("My New Camera");
@@ -130,6 +163,11 @@ Scene.addNode(oCam);
     ));
 }
 
+
+/***
+ * lookup table for positioning offset. 
+ * The value is the distance each character is placed from the origin in the positive and negative direction on the x axis
+ */
 function determineOffset(event){
     var offsetLookup = {
         "Punching_TakingPunch" : 43,
@@ -143,15 +181,30 @@ function determineOffset(event){
     return -1;
 
 }
+/***
+ * lookup table for the frames to cut each animation down to
+ * values represent range the original set of frames
+ */
+function determineFrames(){}
+
+/***
+ * Clears the scene and loads in the scene with default backdrop and camera
+ */
 function resetScene(){
     Scene.clear();
     //loads in scene with backdrop and camera
     Scene.loadScene("C:/Users/bmzif/Downloads/DefaultScene.duf","open");
 }
+
+
 //file source and destination (can be changed for different machines)
 var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
-//
+
+
+/***
+ * When given a folder, returns an array of the subfolders of that folder. 
+ */
 function getSubFolders(folderPath) {
     var dir = new DzDir(folderPath);
     var entries = dir.entryList();
@@ -168,7 +221,9 @@ function getSubFolders(folderPath) {
     return folders;
 }
 
-// Utility to list all FBX files in a folder
+/***
+ * Utility to list all FBX files in a folder
+ */
 function getFBXFiles(folderPath) {
     var folder = new DzDir(folderPath);
     var files = folder.entryList(); // returns array of file names
@@ -182,7 +237,7 @@ function getFBXFiles(folderPath) {
 }
 
 
-// 🔹 Main loop: iterate through every combination of two files
+//Main loop: iterate through every combination of two files
 var comboFolders = getSubFolders(fbxFolder);
 for (var c = 0; c < comboFolders.length; c++) {
 
@@ -208,6 +263,7 @@ for (var c = 0; c < comboFolders.length; c++) {
     }
     var actionName = comboFolders[c].split("/")[comboFolders[c].split("/").length -1];
     // Cartesian product: every A with every B
+    //Discrete math was important afterall
     for (var i = 0; i < animAFiles.length; i++) {
         for (var j = 0; j < animBFiles.length; j++) {
             var nameA = animAFiles[i].split("/").pop().replace(".fbx", "");
