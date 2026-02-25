@@ -1,8 +1,8 @@
 // Import and position function
-function silentImport(pathA, pathB) {
+function silentImport(pathA, pathB,event) {
 
     print("Clearing current scene...");
-    Scene.clear();
+    resetScene();
     print("Scene cleared.");
 
     function importAndTransform(path, offsetX, yRotationRadians) {
@@ -39,6 +39,8 @@ function silentImport(pathA, pathB) {
         // Detect new nodes
         var newNodes = Scene.getNodeList();
         print(newNodes.length);
+
+        //Node object being manipulated
         var rootNode = newNodes[oldNodes.length];
         
 
@@ -62,21 +64,20 @@ function silentImport(pathA, pathB) {
             " | X=" + offsetX +
             " | Y-rot=" + (yRotationRadians * 180 / Math.PI) + "°"
         );
-
         return rootNode;
     }
-
+    var offset = determineOffset(event);
     // Character A: on +X, face LEFT (-X)
     var nodeA = importAndTransform(
         pathA,
-        43,
+        offset,
         -Math.PI / 2   // -90°
     );
 
     // Character B: on -X, face RIGHT (+X)
     var nodeB = importAndTransform(
         pathB,
-        -43,
+        -offset,
         Math.PI / 2    // +90°
     );
 
@@ -128,7 +129,25 @@ Scene.addNode(oCam);
         new DzVec3(0, 0, 0)
     ));
 }
- 
+
+function determineOffset(event){
+    var offsetLookup = {
+        "Punching_TakingPunch" : 43,
+        "Fireball_FallingDown" : 55,
+        "BlowAKiss_GoalKeeprMiss" : 73
+    };
+    if(event in offsetLookup){
+        return offsetLookup[event];
+    }
+    print("lookup failed");
+    return -1;
+
+}
+function resetScene(){
+    Scene.clear();
+    //loads in scene with backdrop and camera
+    Scene.loadScene("C:/Users/bmzif/Downloads/DefaultScene.duf","open");
+}
 //file source and destination (can be changed for different machines)
 var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
@@ -196,7 +215,7 @@ for (var c = 0; c < comboFolders.length; c++) {
             if (nameA ==nameB ){
                 print("skipping "+ nameA + " + " +nameB + " scene." );
             } else{
-            silentImport(animAFiles[i], animBFiles[j]);
+            silentImport(animAFiles[i], animBFiles[j],actionName);
             saveSceneToPath(
                 saveFolder,
                 nameA + "_" + nameB + "_" + actionName
