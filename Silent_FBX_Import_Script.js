@@ -7,30 +7,21 @@ function silentImport(pathA, pathB) {
     function trimPropertyKeysToFrameRange(prop, startFrame, endFrame) {
         if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function" || typeof prop.deleteKeys !== "function") return;
 
-        var ticksPerFrame = Scene.getTimeStep().valueOf();
-        var keepStart = Math.round(startFrame * ticksPerFrame);
-        var keepEnd = Math.round(endFrame * ticksPerFrame);
+		var ticksPerFrame = Scene.getTimeStep().valueOf(); // usually 160
+		var keepStartTick = startFrame * ticksPerFrame;
+		var keepEndTick = endFrame * ticksPerFrame;        
 
-        var kr = prop.getKeyRange();
-        if (!kr) return;
-        print("keyRange start and end: " + kr.start + " " + kr.end + "\n and frames being kept are " + keepStart + " to " + keepEnd);
-        // delete before keep window
-        if (kr.start < keepStart) {
-            prop.deleteKeys(kr.start, keepStart - 1);
-        }
-
-        // delete after keep window
- 
-        kr = prop.getKeyRange(); // refresh after first delete
-        if (kr && kr.end > keepEnd) {
-            prop.deleteKeys(keepEnd + 1, kr.end);
+        for (var i = prop.getNumKeys() - 1; i >= 0; --i) {
+            var t = prop.getKeyTime(i).valueOf(); // tick time
+            if (t < keepStartTick || t > keepEndTick) {
+                prop.deleteKeys(i,i); // index delete, safe in reverse
+            }
         }
     }
 
 
     function applyRangeToNodes(nodes, startFrame, endFrame ) {
-        for (var i = 0; i < 10; i++) {
-            //replace '10' with nodes.length
+        for (var i = 0; i < nodes.length; i++) {
             var props = nodes[i].getPropertyList();
             for (var p = 0; p < props.length; p++) {
                 var prop = props[p];
