@@ -20,15 +20,13 @@ function silentImport(pathA, pathB) {
     }
 
 
-    function applyRangeToNodes(nodes, startFrame, endFrame ) {
-        for (var i = 0; i < nodes.length; i++) {
-            var props = nodes[i].getPropertyList();
+    function applyRangeToNodes(node, startFrame, endFrame ) {
+            var props = node.getPropertyList();
             for (var p = 0; p < props.length; p++) {
                 var prop = props[p];
                 if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function") continue;
                 trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
             }
-        }
     }
     function importAndTransform(path, offsetX, yRotationRadians) {
 
@@ -74,7 +72,7 @@ function silentImport(pathA, pathB) {
         //setting range for frames
         var startFrame = 0;
         var endFrame= 30;  
-        applyRangeToNodes(importedNodes, startFrame, endFrame);
+        applyRangeToNodes(rootNode, startFrame, endFrame);
 
         if (!rootNode) {
             print("No root node detected for " + path);
