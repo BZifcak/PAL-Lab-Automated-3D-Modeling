@@ -9,14 +9,26 @@ function silentImport(pathA, pathB) {
 
 		var ticksPerFrame = Scene.getTimeStep().valueOf(); // usually 160
 		var keepStartTick = startFrame * ticksPerFrame;
-		var keepEndTick = endFrame * ticksPerFrame;        
-
+		var keepEndTick = endFrame * ticksPerFrame;
+		var shiftTicks = startFrame * ticksPerFrame;        
+		var keys = [];
         for (var i = prop.getNumKeys() - 1; i >= 0; --i) {
             var t = prop.getKeyTime(i).valueOf(); // tick time
             if (t < keepStartTick || t > keepEndTick) {
-                prop.deleteKeys(i,i); // index delete, safe in reverse
-            }
-        }
+	            prop.deleteKeys(i,i); // index delete, safe in reverse
+			} else {
+			     keys.push({
+	                time: prop.getKeyTime(i).valueOf(),
+	                value: prop.getKeyValue(i)
+				 });
+		   }
+	   }
+	   
+			prop.setValue(new DzTime(5*160), keys[keys.length -1].value);
+			prop.setValue(new DzTime(6*160), keys[keys.length -2].value);
+			prop.setValue(new DzTime(7*160), keys[keys.length -3].value);
+			prop.setValue(new DzTime(8*160), keys[keys.length -4].value);
+       }
     }
 	//recursively appends to props
 	function getPropsOfChildren(node,props){
@@ -36,8 +48,6 @@ function silentImport(pathA, pathB) {
             getPropsOfChildren(node, props);
             for (var p = 0; p < props.length; p++) {
                 var prop = props[p];
-                print(prop);
-                //if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function") continue;
                 trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
             }
     }
