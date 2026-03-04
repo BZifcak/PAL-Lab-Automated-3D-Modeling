@@ -19,15 +19,13 @@ function silentImport(pathA, pathB) {
 			} else {
 			     keys.push({
 	                time: prop.getKeyTime(i).valueOf(),
-	                value: prop.getKeyValue(i)
+	                value: prop.getKeyValue(i),
 				 });
+				 prop.deleteKeys(i,i);
 		   }
 	   }
-	   
-			prop.setValue(new DzTime(5*160), keys[keys.length -1].value);
-			prop.setValue(new DzTime(6*160), keys[keys.length -2].value);
-			prop.setValue(new DzTime(7*160), keys[keys.length -3].value);
-			prop.setValue(new DzTime(8*160), keys[keys.length -4].value);
+	   for(var i = 0; i < keys.length; i++){
+			prop.setValue(new DzTime(keys[i].time - shiftTicks), keys[i].value);
        }
     }
 	//recursively appends to props
