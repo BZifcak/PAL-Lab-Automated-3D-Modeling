@@ -18,13 +18,26 @@ function silentImport(pathA, pathB) {
             }
         }
     }
-
-
+	//recursively appends to props
+	function getPropsOfChildren(node,props){
+		//adds nodes properties to props
+		props.push( node.getPropertyList()); 		
+		if(node.getNumNodeChildren() ==0){ 
+			//terminates if there are no children
+			return ;
+		}
+	    var children = node.getNodeChildren(true);
+	    for (var i = 0; i < children.length; i++) {
+	        Array.prototype.push.apply(props, children[i].getPropertyList());
+	    }
+	}
     function applyRangeToNodes(node, startFrame, endFrame ) {
-            var props = node.getPropertyList();
+            var props = [];
+            getPropsOfChildren(node, props);
             for (var p = 0; p < props.length; p++) {
                 var prop = props[p];
-                if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function") continue;
+                print(prop);
+                //if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function") continue;
                 trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
             }
     }
@@ -70,10 +83,9 @@ function silentImport(pathA, pathB) {
         }
         var rootNode = importedNodes.length ? importedNodes[0] : null;
         //setting range for frames
-        var startFrame = 0;
+        var startFrame = 25;
         var endFrame= 30;  
         applyRangeToNodes(rootNode, startFrame, endFrame);
-
         if (!rootNode) {
             print("No root node detected for " + path);
             return null;
