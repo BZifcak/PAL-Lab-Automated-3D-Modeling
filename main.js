@@ -1,5 +1,5 @@
 // Import and position function
-function silentImport(pathA, pathB) {
+function silentImport(pathA, pathB,event) {
 
     print("Clearing current scene...");
     Scene.clear();
@@ -105,9 +105,21 @@ function silentImport(pathA, pathB) {
         return { rootNode: rootNode, nodes: importedNodes };;
         
     }
+    var offset = determineOffset(event);
 
-    var a = importAndTransform(pathA, 100, -Math.PI / 2);
-    var b = importAndTransform(pathB, -100, Math.PI / 2);
+    // Character A: on +X, face LEFT (-X)
+    var a = importAndTransform(
+        pathA,
+        offset,
+        -Math.PI / 2   // -90°
+    );
+
+    // Character B: on -X, face RIGHT (+X)
+    var b = importAndTransform(
+        pathB,
+        -offset,
+        Math.PI / 2    // +90°
+    );
 
     if (!a || !b) {
         print("Import failed.");
