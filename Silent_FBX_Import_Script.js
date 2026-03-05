@@ -49,7 +49,7 @@ function silentImport(pathA, pathB, event) {
                 trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
             }
     }
-    function importAndTransform(path, offsetX, yRotationRadians) {
+    function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFrame) {
 
         print("Importing: " + path);
 
@@ -91,8 +91,6 @@ function silentImport(pathA, pathB, event) {
         }
         var rootNode = importedNodes.length ? importedNodes[0] : null;
         //setting range for frames
-        var startFrame = 25;
-        var endFrame= 30;  
         applyRangeToNodes(rootNode, startFrame, endFrame);
         if (!rootNode) {
             print("No root node detected for " + path);
@@ -129,14 +127,18 @@ function silentImport(pathA, pathB, event) {
     var a = importAndTransform(
         pathA,
         offset,
-        -Math.PI / 2   // -90°
+        -Math.PI / 2, // -90°
+        10,
+        30   
     );
 
     // Character B: on -X, face RIGHT (+X)
     var b = importAndTransform(
         pathB,
         -offset,
-        Math.PI / 2    // +90°
+        Math.PI / 2,    // +90°,
+        10,
+        30   
     );
 
     if (!a || !b) {
