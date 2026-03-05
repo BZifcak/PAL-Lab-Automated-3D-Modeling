@@ -1,4 +1,4 @@
-function silentImport(pathA, pathB) {
+function silentImport(pathA, pathB, event) {
 
     print("Clearing current scene...");
     Scene.clear();
@@ -123,8 +123,21 @@ function silentImport(pathA, pathB) {
         
     }
 
-    var a = importAndTransform(pathA, 100, -Math.PI / 2);
-    var b = importAndTransform(pathB, -100, Math.PI / 2);
+    var offset = determineOffset(event);
+
+    // Character A: on +X, face LEFT (-X)
+    var a = importAndTransform(
+        pathA,
+        offset,
+        -Math.PI / 2   // -90°
+    );
+
+    // Character B: on -X, face RIGHT (+X)
+    var b = importAndTransform(
+        pathB,
+        -offset,
+        Math.PI / 2    // +90°
+    );
 
     if (!a || !b) {
         print("Import failed.");
@@ -138,5 +151,20 @@ function silentImport(pathA, pathB) {
 // RUN
 silentImport(
     "C:/Users/bmzif/Downloads/Two Handed Sword Death.fbx",
-    "C:/Users/bmzif/Downloads/Bayonet Stab.fbx"
+    "C:/Users/bmzif/Downloads/Bayonet Stab.fbx",
+    "Punching_TakingPunch"
 );
+
+function determineOffset(event){
+    var offsetLookup = {
+        "Punching_TakingPunch" : 43,
+        "Fireball_FallingDown" : 55,
+        "BlowAKiss_GoalKeeprMiss" : 73
+    };
+    if(event in offsetLookup){
+        return offsetLookup[event];
+    }
+    print("lookup failed");
+    return -1;
+
+}
