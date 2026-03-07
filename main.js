@@ -2,7 +2,7 @@
 function silentImport(pathA, pathB,event) {
 
     print("Clearing current scene...");
-    Scene.clear();
+    resetScene();
     print("Scene cleared.");
 
     function trimPropertyKeysToFrameRange(prop, startFrame, endFrame) {

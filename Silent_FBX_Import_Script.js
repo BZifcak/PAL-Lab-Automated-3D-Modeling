@@ -1,7 +1,7 @@
 function silentImport(pathA, pathB, event) {
 
     print("Clearing current scene...");
-    Scene.clear();
+    resetScene();
     print("Scene cleared.");
 
     function trimPropertyKeysToFrameRange(prop, startFrame, endFrame) {
@@ -169,4 +169,9 @@ function determineOffset(event){
     print("lookup failed");
     return -1;
 
+}
+function resetScene(){
+    Scene.clear();
+    //loads in scene with backdrop and camera
+    Scene.loadScene("C:/Users/bmzif/Downloads/DefaultScene.duf","open");
 }
