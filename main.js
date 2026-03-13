@@ -122,14 +122,17 @@ function silentImport(pathA, pathB, event) {
     }
 
     var offset = determineOffset(event);
+    var AFrames = determineFrames(event);
+    var BFrames = determineFrames(event);
+
 
     // Character A: on +X, face LEFT (-X)
     var a = importAndTransform(
         pathA,
         offset,
         -Math.PI / 2, // -90°
-        10,
-        30   
+        AFrames[0],
+        AFrames[1]   
     );
 
     // Character B: on -X, face RIGHT (+X)
@@ -137,8 +140,8 @@ function silentImport(pathA, pathB, event) {
         pathB,
         -offset,
         Math.PI / 2,    // +90°,
-        10,
-        30   
+        BFrames[0],
+        BFrames[1]
     );
 
     if (!a || !b) {
@@ -184,10 +187,9 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
  * TODO: parameterize positioning
  */
 function makeCamera(){
-var oCam = new DzBasicCamera();
-oCam.setName("My New Camera");
-Scene.addNode(oCam);
-
+    var oCam = new DzBasicCamera();
+    oCam.setName("My New Camera");
+    Scene.addNode(oCam);
     oCam.setWSPos(new DzVec3(0, 130, 400));
     oCam.setWSRot(new DzQuat(
         DzRotationOrder("XYZ"),
@@ -219,7 +221,9 @@ function determineOffset(event){
  */
 function determineFrames(event){
     var presetFrames = {
-        "Event" : 0
+        "Punching_TakingPunch" : [0,30],
+        "Fireball_FallingDown" : [0,30],
+        "BlowAKiss_GoalKeeprMiss" : [0,30]
     }
     if(event in offsetLookup){
         return offsetLookup[event];
@@ -239,9 +243,8 @@ function resetScene(){
 
 
 //file source and destination (can be changed for different machines)
-var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedFBXDemo"; 
+var fbxFolder = "C:/Users/bmzif/Downloads/DownloadedSmallerDemo"; 
 var saveFolder = "C:/Users/bmzif/Downloads/DestinationFBX";
-
 
 /***
  * When given a folder, returns an array of the subfolders of that folder. 
