@@ -122,8 +122,7 @@ function silentImport(pathA, pathB, event) {
     }
 
     var offset = determineOffset(event);
-    var AFrames = determineFrames(event);
-    var BFrames = determineFrames(event);
+    var Frames = determineFrames(event);
 
 
     // Character A: on +X, face LEFT (-X)
@@ -131,8 +130,8 @@ function silentImport(pathA, pathB, event) {
         pathA,
         offset,
         -Math.PI / 2, // -90°
-        AFrames[0],
-        AFrames[1]   
+        Frames[0][0],
+        Frames[0][1]   
     );
 
     // Character B: on -X, face RIGHT (+X)
@@ -140,8 +139,8 @@ function silentImport(pathA, pathB, event) {
         pathB,
         -offset,
         Math.PI / 2,    // +90°,
-        BFrames[0],
-        BFrames[1]
+        Frames[1][0],
+        Frames[1][1]
     );
 
     if (!a || !b) {
@@ -218,15 +217,16 @@ function determineOffset(event){
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
+ * values are 2D arrays, where the inner arrays are the frame ranges for the first and second characters respectively
  */
 function determineFrames(event){
-    var presetFrames = {
-        "Punching_TakingPunch" : [0,30],
-        "Fireball_FallingDown" : [0,30],
-        "BlowAKiss_GoalKeeprMiss" : [0,30]
+    var frameLookup = {
+        "Punching_TakingPunch" : [[0,30],[0,15]],
+        "Fireball_FallingDown" : [[0,30],[0,15]],
+        "BlowAKiss_GoalKeeprMiss" : [[0,30],[0,15]]
     }
-    if(event in offsetLookup){
-        return offsetLookup[event];
+    if(event in frameLookup){
+        return frameLookup[event];
     }
     print("lookup failed");
     return -1;
