@@ -1,10 +1,10 @@
-function trimPropertyKeysToFrameRange(prop, startFrame, endFrame) {
+function trimPropertyKeysToFrameRange(prop, startFrame, endFrame, rebase) {
     if (typeof prop.getNumKeys !== "function" || typeof prop.getKeyTime !== "function" || typeof prop.deleteKeys !== "function") return;
 
     var ticksPerFrame = Scene.getTimeStep().valueOf(); // usually 160
     var keepStartTick = startFrame * ticksPerFrame;
     var keepEndTick = endFrame * ticksPerFrame;
-    var shiftTicks = startFrame * ticksPerFrame;        
+    var shiftTicks = rebase * ticksPerFrame;        
     var keys = [];
     for (var i = prop.getNumKeys() - 1; i >= 0; --i) {
         var t = prop.getKeyTime(i).valueOf(); // tick time
@@ -35,15 +35,15 @@ function getPropsOfChildren(node,props){
         Array.prototype.push.apply(props, children[i].getPropertyList());
     }
 }
-function applyRangeToNodes(node, startFrame, endFrame ) {
+function applyRangeToNodes(node, startFrame, endFrame, rebase ) {
         var props = [];
         getPropsOfChildren(node, props);
         for (var p = 0; p < props.length; p++) {
             var prop = props[p];
-            trimPropertyKeysToFrameRange(prop, startFrame, endFrame);
+            trimPropertyKeysToFrameRange(prop, startFrame, endFrame,rebase);
         }
 }
-function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFrame) {
+function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFrame, rebase) {
 
     print("Importing: " + path);
 
@@ -85,7 +85,7 @@ function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFram
     }
     var rootNode = importedNodes.length ? importedNodes[0] : null;
     //setting range for frames
-    applyRangeToNodes(rootNode, startFrame, endFrame);
+    applyRangeToNodes(rootNode, startFrame, endFrame, rebase);
     if (!rootNode) {
         print("No root node detected for " + path);
         return null;
@@ -132,7 +132,8 @@ function silentImport(pathA, pathB, event) {
         offset,
         -Math.PI / 2, // -90°
         Frames[0][0],
-        Frames[0][1]   
+        Frames[0][1],
+        Frames[0][2]   
     );
 
     // Character B: on -X, face RIGHT (+X)
@@ -141,7 +142,9 @@ function silentImport(pathA, pathB, event) {
         -offset,
         Math.PI / 2,    // +90°,
         Frames[1][0],
-        Frames[1][1]
+        Frames[1][1],
+        Frames[1][2]
+
     );
 
     if (!a || !b) {
@@ -222,9 +225,9 @@ function determineOffset(event){
  */
 function determineFrames(event){
     var frameLookup = {
-        "Punching_TakingPunch" : [[0,30],[0,15]],
-        "Fireball_FallingDown" : [[0,30],[0,15]],
-        "BlowAKiss_GoalKeeprMiss" : [[0,30],[0,15]]
+        "Punching_TakingPunch" : [[0,30,0],[0,15,0]],
+        "Fireball_FallingDown" : [[0,30,0],[0,15,0]],
+        "BlowAKiss_GoalKeeprMiss" : [[0,30,0],[0,15,0]]
     }
     if(event in frameLookup){
         return frameLookup[event];
