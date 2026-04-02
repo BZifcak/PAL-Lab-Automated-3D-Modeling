@@ -221,7 +221,7 @@ function determineOffset(event){
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
- * values are 2D arrays, where the inner arrays are the frame ranges for the first and second characters respectively
+ * values are 2D arrays, where the inner arrays are the frame ranges and starting frame (in animation play range) for the first and second characters respectively
  */
 function determineFrames(event){
     var frameLookup = {
