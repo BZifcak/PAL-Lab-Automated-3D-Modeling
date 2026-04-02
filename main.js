@@ -4,7 +4,7 @@ function trimPropertyKeysToFrameRange(prop, startFrame, endFrame, rebase) {
     var ticksPerFrame = Scene.getTimeStep().valueOf(); // usually 160
     var keepStartTick = startFrame * ticksPerFrame;
     var keepEndTick = endFrame * ticksPerFrame;
-    var shiftTicks = rebase * ticksPerFrame;        
+    var shiftTicks = (startFrame - rebase) * ticksPerFrame;        
     var keys = [];
     for (var i = prop.getNumKeys() - 1; i >= 0; --i) {
         var t = prop.getKeyTime(i).valueOf(); // tick time
@@ -225,9 +225,9 @@ function determineOffset(event){
  */
 function determineFrames(event){
     var frameLookup = {
-        "Punching_TakingPunch" : [[0,30,0],[0,15,0]],
-        "Fireball_FallingDown" : [[0,30,0],[0,15,0]],
-        "BlowAKiss_GoalKeeprMiss" : [[0,30,0],[0,15,0]]
+        "Punching_TakingPunch" : [[0,30,0],[0,15,15]],
+        "Fireball_FallingDown" : [[0,30,0],[0,15,15]],
+        "BlowAKiss_GoalKeeprMiss" : [[0,30,0],[0,15,15]]
     }
     if(event in frameLookup){
         return frameLookup[event];
