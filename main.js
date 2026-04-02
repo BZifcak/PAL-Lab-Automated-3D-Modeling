@@ -131,9 +131,9 @@ function silentImport(pathA, pathB, event) {
         pathA,
         offset,
         -Math.PI / 2, // -90°
-        Frames[0][0],
-        Frames[0][1],
-        Frames[0][2]   
+        Frames[0].start,
+        Frames[0].end,
+        Frames[0].rebase   
     );
 
     // Character B: on -X, face RIGHT (+X)
@@ -141,9 +141,9 @@ function silentImport(pathA, pathB, event) {
         pathB,
         -offset,
         Math.PI / 2,    // +90°,
-        Frames[1][0],
-        Frames[1][1],
-        Frames[1][2]
+        Frames[1].start,
+        Frames[1].end,
+        Frames[1].rebase
 
     );
 
@@ -207,9 +207,9 @@ function makeCamera(){
  */
 function determineOffset(event){
     var offsetLookup = {
-        "Punching_TakingPunch" : 43,
-        "Fireball_FallingDown" : 55,
-        "BlowAKiss_GoalKeeprMiss" : 73
+        "Punching_TakingPunch" : 10,
+        "Fireball_FallingDown" : 10,
+        "BlowAKiss_GoalKeeprMiss" : 10
     };
     if(event in offsetLookup){
         return offsetLookup[event];
@@ -221,13 +221,13 @@ function determineOffset(event){
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
- * values are 2D arrays, where the inner arrays are the frame ranges and starting frame (in animation play range) for the first and second characters respectively
+ * values are 2D arrays, where the inner arrays are the frame ranges for the first and second characters respectively
  */
 function determineFrames(event){
     var frameLookup = {
-        "Punching_TakingPunch" : [[0,30,0],[0,15,15]],
-        "Fireball_FallingDown" : [[0,30,0],[0,15,15]],
-        "BlowAKiss_GoalKeeprMiss" : [[0,30,0],[0,15,15]]
+        "Punching_TakingPunch" : [{start: 0, end: 30, rebase: 0},{start: 0,end: 15, rebase: 15}],
+        "Fireball_FallingDown" : [{start: 0, end: 30, rebase: 0},{start: 0,end: 15, rebase: 15}],
+        "BlowAKiss_GoalKeeprMiss" : [{start: 0, end: 30, rebase: 0},{start: 0,end: 15, rebase: 15}]
     }
     if(event in frameLookup){
         return frameLookup[event];
