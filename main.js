@@ -120,6 +120,10 @@ function silentImport(pathA, pathB, event) {
 
     print("Clearing current scene...");
     resetScene();
+    var cameraPos = determineCameraPos(event)[0];
+    var cameraRot = determineCameraPos(event)[1];
+    makeCamera(cameraPos,cameraRot);
+
     print("Scene cleared.");
 
     var offset = determineOffset(event);
@@ -189,14 +193,14 @@ function saveSceneToPath(saveFolderPath, fileNameWithoutExtension) {
  * camera constructor with hard coded positioning,
  * TODO: parameterize positioning
  */
-function makeCamera(){
+function makeCamera(cameraPosition, cameraRotation){
     var oCam = new DzBasicCamera();
-    oCam.setName("My New Camera");
+    oCam.setName("Dynamic Camera");
     Scene.addNode(oCam);
-    oCam.setWSPos(new DzVec3(0, 130, 400));
+    oCam.setWSPos(new DzVec3(cameraPosition.x, cameraPosition.y, cameraPosition.z));
     oCam.setWSRot(new DzQuat(
         DzRotationOrder("XYZ"),
-        new DzVec3(0, 0, 0)
+        new DzVec3(cameraRotation.x, cameraRotation.y, cameraRotation.z)
     ));
 }
 
@@ -218,6 +222,26 @@ function determineOffset(event){
     return -1;
 
 }
+
+/***
+ * lookup table for camera positioning
+ * The value is an array containing two objects with XYZ fields, 
+ * the first object is the cameras positioning in the scene, 
+ * the second object is the cameras xyz rotations
+ */
+function determineCameraPos(event){
+	var posLookup = {
+		 "Punching_TakingPunch" : [{x: 30, y: 10, z: 3},{x: 15,y: 0, z: 0}],
+        "Fireball_FallingDown" : [{x: 27, y: 10, z: 3},{x: 27,y: 0, z: 0}],
+        "BlowAKiss_GoalKeeprMiss" : [{x: 36, y: 10, z: 3},{x: 36,y: 0, z: 0}],
+	};
+	if(event in posLookup){
+		return posLookup[event]
+	}
+    print("lookup failed");
+    return -1;
+}
+
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
