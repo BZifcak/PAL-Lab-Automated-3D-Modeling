@@ -203,7 +203,7 @@ function makeCamera(){
 
 /***
  * lookup table for positioning offset. 
- * The value is a 2D array containing objects with XYZ positions for the first and second characters respectively
+ * The value is an array containing objects with XYZ positions for the first and second characters respectively distance each character is placed from the origin in the positive and negative direction on the x axis
  */
 function determineOffset(event){
     var offsetLookup = {
@@ -221,7 +221,7 @@ function determineOffset(event){
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
- * values are 2D arrays, where the inner arrays are the frame ranges for the first and second characters respectively
+ * values are arrays, where the array elements are the frame ranges for the first and second characters respectively, followed by the frame that the animation will begin playing
  */
 function determineFrames(event){
     var frameLookup = {
