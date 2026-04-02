@@ -203,7 +203,7 @@ function makeCamera(){
 
 /***
  * lookup table for positioning offset. 
- * The value is the distance each character is placed from the origin in the positive and negative direction on the x axis
+ * The value is a 2D array containing objects with XYZ positions for the first and second characters respectively
  */
 function determineOffset(event){
     var offsetLookup = {
