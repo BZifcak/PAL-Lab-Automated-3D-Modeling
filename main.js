@@ -43,7 +43,7 @@ function applyRangeToNodes(node, startFrame, endFrame, rebase ) {
             trimPropertyKeysToFrameRange(prop, startFrame, endFrame,rebase);
         }
 }
-function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFrame, rebase) {
+function importAndTransform(path, offset, yRotationRadians, startFrame, endFrame, rebase) {
 
     print("Importing: " + path);
 
@@ -92,7 +92,7 @@ function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFram
     }
 
     // Position
-    rootNode.setWSPos(new DzVec3(offsetX, 0, 0));
+    rootNode.setWSPos(new DzVec3(offset.x, offset.y, offset.z));
 
     // Rotate (do NOT touch animation data)
     var quat = new DzQuat(
@@ -103,7 +103,7 @@ function importAndTransform(path, offsetX, yRotationRadians, startFrame, endFram
 
     print(
         "Imported & transformed: " + rootNode.getLabel() +
-        " | X=" + offsetX +
+        " | XYZ=" + offset.x +","+offset.y +","+offset.z  +","+
         " | Y-rot=" + (yRotationRadians * 180 / Math.PI) + "°"
     );
 
@@ -129,7 +129,7 @@ function silentImport(pathA, pathB, event) {
     // Character A: on +X, face LEFT (-X)
     var a = importAndTransform(
         pathA,
-        offset,
+        offset[0],
         -Math.PI / 2, // -90°
         Frames[0].start,
         Frames[0].end,
@@ -139,7 +139,7 @@ function silentImport(pathA, pathB, event) {
     // Character B: on -X, face RIGHT (+X)
     var b = importAndTransform(
         pathB,
-        -offset,
+        offset[1],
         Math.PI / 2,    // +90°,
         Frames[1].start,
         Frames[1].end,
@@ -207,9 +207,9 @@ function makeCamera(){
  */
 function determineOffset(event){
     var offsetLookup = {
-        "Punching_TakingPunch" : 10,
-        "Fireball_FallingDown" : 10,
-        "BlowAKiss_GoalKeeprMiss" : 10
+        "Punching_TakingPunch" : [{x: 30, y: 10, z: 3},{x: 15,y: 0, z: 0}],
+        "Fireball_FallingDown" : [{x: 27, y: 10, z: 3},{x: 27,y: 0, z: 0}],
+        "BlowAKiss_GoalKeeprMiss" : [{x: 36, y: 10, z: 3},{x: 36,y: 0, z: 0}],
     };
     if(event in offsetLookup){
         return offsetLookup[event];
