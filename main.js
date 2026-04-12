@@ -241,7 +241,23 @@ function determineCameraPos(event){
     print("lookup failed");
     return -1;
 }
-
+/***
+ * lookup table for AnimationRanges
+ * The lookup tables value is an object containing the frame range for the final animation.
+ * this is determined by event name for the whole scene, not by character
+ */
+function determineAnimationRange(event){
+	var rangeLookup = {
+		 "Punching_TakingPunch" : {start: 0, end: 60},
+        "Fireball_FallingDown" : {start: 0, end: 60},
+        "BlowAKiss_GoalKeeprMiss" : {start: 0, end: 60}
+	};
+	if(event in rangeLookup){
+		return rangeLookup[event]
+	}
+    print("determineAnimationRange lookup failed");
+    return -1;
+}
 /***
  * lookup table for the frames to cut each animation down to
  * values represent range the original set of frames
