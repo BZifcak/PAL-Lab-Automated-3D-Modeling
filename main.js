@@ -134,7 +134,7 @@ function silentImport(pathA, pathB, event) {
     var a = importAndTransform(
         pathA,
         offset[0],
-        -Math.PI / 2, // -90°
+        0,
         Frames[0].start,
         Frames[0].end,
         Frames[0].rebase   
@@ -144,7 +144,7 @@ function silentImport(pathA, pathB, event) {
     var b = importAndTransform(
         pathB,
         offset[1],
-        Math.PI / 2,    // +90°,
+        Math.PI,
         Frames[1].start,
         Frames[1].end,
         Frames[1].rebase
