@@ -56,7 +56,6 @@ function importAndTransform(path, offset, yRotationRadians, startFrame, endFrame
 
     // Snapshot before import
     var oldNodes = Scene.getNodeList();
-    print(oldNodes.length);
     var settings = new DzFileIOSettings();
     importer.getOptions(settings, true, "");
 
@@ -76,7 +75,6 @@ function importAndTransform(path, offset, yRotationRadians, startFrame, endFrame
 
     // Detect new nodes
     var newNodes = Scene.getNodeList();
-    print(newNodes.length);
 
     //Node object
     var importedNodes = [];
@@ -109,8 +107,6 @@ function importAndTransform(path, offset, yRotationRadians, startFrame, endFrame
 
 
     var props = rootNode.getPropertyList();
-    print(props);
-    print("props length: " + props.length);
     return { rootNode: rootNode, nodes: importedNodes };;
     
 }
@@ -128,6 +124,11 @@ function silentImport(pathA, pathB, event) {
 
     var offset = determineOffset(event);
     var Frames = determineFrames(event);
+    print("current play range: " + Scene.getPlayRange());
+    print("current animation range: " + Scene.getAnimRange());
+    var animRange = determineAnimationRange(event);
+    print(animRange.start.getTime);
+    Scene.setAnimRange(animRange);
 
 
     // Character A: on +X, face LEFT (-X)
@@ -218,7 +219,7 @@ function determineOffset(event){
     if(event in offsetLookup){
         return offsetLookup[event];
     }
-    print("lookup failed");
+    print("determineOffset lookup failed");
     return -1;
 
 }
@@ -238,7 +239,7 @@ function determineCameraPos(event){
 	if(event in posLookup){
 		return posLookup[event]
 	}
-    print("lookup failed");
+    print("determineCameraPos lookup failed");
     return -1;
 }
 /***
@@ -248,9 +249,9 @@ function determineCameraPos(event){
  */
 function determineAnimationRange(event){
 	var rangeLookup = {
-		 "Punching_TakingPunch" : {start: 0, end: 60},
-        "Fireball_FallingDown" : {start: 0, end: 60},
-        "BlowAKiss_GoalKeeprMiss" : {start: 0, end: 60}
+		 "Punching_TakingPunch" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf())),
+        "Fireball_FallingDown" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf())),
+        "BlowAKiss_GoalKeeprMiss" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf()))
 	};
 	if(event in rangeLookup){
 		return rangeLookup[event]
@@ -272,7 +273,7 @@ function determineFrames(event){
     if(event in frameLookup){
         return frameLookup[event];
     }
-    print("lookup failed");
+    print("determineFrames lookup failed");
     return -1;
 }
 
