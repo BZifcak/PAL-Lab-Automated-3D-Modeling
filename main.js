@@ -124,11 +124,6 @@ function silentImport(pathA, pathB, event) {
 
     var offset = determineOffset(event);
     var Frames = determineFrames(event);
-    print("current play range: " + Scene.getPlayRange());
-    print("current animation range: " + Scene.getAnimRange());
-    var animRange = determineAnimationRange(event);
-    print(animRange.start.getTime);
-    Scene.setAnimRange(animRange);
 
 
     // Character A: on +X, face LEFT (-X)
@@ -151,7 +146,10 @@ function silentImport(pathA, pathB, event) {
         Frames[1].rebase
 
     );
-
+    var animRange = determineAnimationRange(event);
+    Scene.setAnimRange(animRange);
+    print("post-import + modification play range: " + Scene.getPlayRange());
+    print("post-import + modification animation range: " + Scene.getAnimRange());
     if (!a || !b) {
         print("Import failed.");
         return;
@@ -244,14 +242,15 @@ function determineCameraPos(event){
 }
 /***
  * lookup table for AnimationRanges
- * The lookup tables value is an object containing the frame range for the final animation.
+ * The lookup tables value is a Daz Time object containing the frame range for the final animation in the form
+ * (start frame * the timeStep (in scene rate of time), endFrame * the timeStep)
  * this is determined by event name for the whole scene, not by character
  */
 function determineAnimationRange(event){
 	var rangeLookup = {
-		 "Punching_TakingPunch" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf())),
-        "Fireball_FallingDown" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf())),
-        "BlowAKiss_GoalKeeprMiss" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(63 * Scene.getTimeStep().valueOf()))
+		 "Punching_TakingPunch" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf())),
+        "Fireball_FallingDown" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf())),
+        "BlowAKiss_GoalKeeprMiss" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf()))
 	};
 	if(event in rangeLookup){
 		return rangeLookup[event]
