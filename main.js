@@ -249,8 +249,8 @@ function determineCameraPos(event){
 function determineAnimationRange(event){
 	var rangeLookup = {
 		 "Punching_TakingPunch" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf())),
-        "Fireball_FallingDown" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf())),
-        "BlowAKiss_GoalKeeprMiss" : new DzTimeRange( new DzTime(0 * Scene.getTimeStep().valueOf()), new DzTime(60 * Scene.getTimeStep().valueOf()))
+        "Fireball_FallingDown" : new DzTimeRange( new DzTime(15 * Scene.getTimeStep().valueOf()), new DzTime(45 * Scene.getTimeStep().valueOf())),
+        "BlowAKiss_GoalKeeprMiss" : new DzTimeRange( new DzTime(10 * Scene.getTimeStep().valueOf()), new DzTime(93 * Scene.getTimeStep().valueOf()))
 	};
 	if(event in rangeLookup){
 		return rangeLookup[event]
